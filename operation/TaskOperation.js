@@ -32,15 +32,4 @@ class TaskOperation {
   removeTask(task) {}
 }
 
-(async () => {
-  await connectDb();
-  let operation = new TaskOperation();
-  //   let data = await operation.insertTask("This has been inserted", "inprogress");
-  //   data = await operation.insertTask(
-  //     "Performing get operation for task",
-  //     "inprogress"
-  //   );
-  //   data = await operation.insertTask("Expose this as an API", "not_started");
-  let data = await operation.getPaginationTaskList(2, 2);
-  console.log(data);
-})();
+module.exports = TaskOperation;
