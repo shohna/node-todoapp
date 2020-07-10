@@ -6,6 +6,8 @@ const connectDb = require("./config/db");
 
 connectDb();
 
+app.use(express.json({ extended: false }));
+
 app.use("/api/task", require("./routes/task"));
 
 app.listen(PORT, (err) => {
