@@ -5,10 +5,10 @@ class TaskOperation {
     this.TaskModel = require("../models/TaskSchema");
   }
 
-  async getPaginationTaskList(current_page, limit = 10) {
+  async getPaginationTaskList(current_page, limit = 10, current_user) {
     try {
       let skip_count = (current_page - 1) * limit;
-      const taskList = await this.TaskModel.find()
+      const taskList = await this.TaskModel.find({ user: current_user })
         .skip(skip_count)
         .limit(limit);
       return taskList;
@@ -17,11 +17,12 @@ class TaskOperation {
       throw new Error("Error while fetching data");
     }
   }
-  async insertTask(title, status) {
+  async insertTask(title, status, current_user) {
     try {
       const taskDb = await new this.TaskModel({
         title: title,
         status: status,
+        user: current_user,
       });
       return await taskDb.save();
     } catch (error) {
@@ -29,12 +30,19 @@ class TaskOperation {
       throw new Error("Error while inserting the data");
     }
   }
-  async updateTask(task) {
+  async updateTask(task, current_user) {
     try {
       const taskDb = await this.TaskModel.findById(task.id);
       if (!taskDb) {
         console.log("Record not present");
         return { isUpdated: false, error: "Record not present" };
+      }
+      if (taskDb.user.toString() !== current_user) {
+        // this task does not belong to the authenticated user
+        return {
+          isUpdated: false,
+          error: "You are not allowed to update this task",
+        };
       }
       const data = await this.TaskModel.findByIdAndUpdate(
         task.id,
@@ -49,12 +57,19 @@ class TaskOperation {
     }
   }
 
-  async removeTask(id) {
+  async removeTask(id, current_user) {
     try {
       const task = await this.TaskModel.findById(id);
       if (!task) {
         console.log("Record not present");
         return { isDeleted: false, error: "Record not present" };
+      }
+      if (task.user.toString() !== current_user) {
+        // this task does not belong to the authenticated user
+        return {
+          isdeleted: false,
+          error: "You are not allowed to delete this task",
+        };
       }
       const data = await this.TaskModel.findByIdAndRemove(id);
       console.log(data, id);

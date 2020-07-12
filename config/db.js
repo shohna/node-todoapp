@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const dbURL = "mongodb://localhost:27017/test?retryWrites=true&w=majority";
+const config = require("./config");
+const dbURL = config.mongodbUrl;
 
 const connectDb = async () => {
   await mongoose.connect(dbURL, {

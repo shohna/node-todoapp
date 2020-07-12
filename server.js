@@ -7,8 +7,9 @@ const connectDb = require("./config/db");
 connectDb();
 
 app.use(express.json({ extended: false }));
-
 app.use("/api/task", require("./routes/task"));
+
+app.use("/api/user", require("./routes/user"));
 
 app.listen(PORT, (err) => {
   if (err) {
